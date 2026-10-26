@@ -1,0 +1,32 @@
+[
+  {
+    "property": "mod.sgate.hide_spaces_switcher",
+    "label": "Hide the Spaces switcher at the foot of the sidebar",
+    "type": "checkbox",
+    "defaultValue": false
+  },
+  {
+    "property": "mod.sgate.hide_space_name",
+    "label": "Hide the space name above the tabs",
+    "type": "checkbox",
+    "defaultValue": false
+  },
+  {
+    "property": "mod.sgate.hide_destination",
+    "label": "Hide the DESTINATION legend in the address bar",
+    "type": "checkbox",
+    "defaultValue": false
+  },
+  {
+    "property": "mod.sgate.plain_pages",
+    "label": "Show web pages without the console frame",
+    "type": "checkbox",
+    "defaultValue": false
+  },
+  {
+    "property": "mod.sgate.system_fonts",
+    "label": "Use Zen's own fonts instead of the console lettering",
+    "type": "checkbox",
+    "defaultValue": false
+  }
+]

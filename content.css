@@ -1,0 +1,180 @@
+/* SGate Theme for Zen Browser: the browser's own pages (new tab, settings,
+ * add-ons...) in SGC console colours. Websites are left alone. Load it as part
+ * of the Sine mod, or from the profile's chrome/userContent.css with
+ *
+ *   @import url("./SGateTheme-Zen/content.css");
+ *
+ * The variables sit under a three-id selector for the reason given in
+ * chrome.css.
+ */
+
+@font-face {
+  font-family: "SGate Share Tech Mono";
+  src: url("fonts/ShareTechMono-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "SGate Michroma";
+  src: url("fonts/Michroma-Regular.ttf") format("truetype");
+}
+
+@-moz-document url("about:newtab"), url("about:home"), url("about:privatebrowsing"),
+  url-prefix("about:preferences"), url-prefix("about:settings"), url-prefix("about:addons"),
+  url("about:config"), url("about:downloads"), url("about:profiles"), url("about:support"),
+  url("about:logins"), url("about:protections")
+{
+  :root:not(#sgc-a):not(#sgc-b):not(#sgc-c) {
+    --sgc-bg: #04070A;
+    --sgc-surface: #060A0F;
+    --sgc-panel: #0A1521;
+    --sgc-frame: #2B6FB3;
+    --sgc-frame-hi: #5CC8FF;
+    --sgc-blue: #3FA0FF;
+    --sgc-rail: #2B5F92;
+    --sgc-dim: #3E5A74;
+    --sgc-text: #C9D6E3;
+    --sgc-text-hi: #BFE3FF;
+    --sgc-amber: #F2B33D;
+    --sgc-amber-hi: #FFD27A;
+    --sgc-orange: #FF8A1E;
+    --sgc-red: #FF5A4A;
+    --sgc-selection: #173A5E;
+    --sgc-mono: "SGate Share Tech Mono", "Share Tech Mono", monospace;
+    --sgc-title: "SGate Michroma", "Michroma", sans-serif;
+
+    color-scheme: dark !important;
+
+    /* design tokens shared by Firefox's in-content pages */
+    --background-color-canvas: var(--sgc-bg) !important;
+    --background-color-box: var(--sgc-panel) !important;
+    --card-background-color: var(--sgc-panel) !important;
+    --text-color: var(--sgc-text) !important;
+    --text-color-deemphasized: #7F93A8 !important;
+    --border-color: rgb(43 111 179 / 0.55) !important;
+    --border-color-interactive: var(--sgc-frame) !important;
+    --focus-outline-color: var(--sgc-frame-hi) !important;
+    --color-accent-primary: var(--sgc-blue) !important;
+    --color-accent-primary-hover: var(--sgc-frame-hi) !important;
+    --color-accent-primary-active: var(--sgc-orange) !important;
+    --link-color: var(--sgc-frame-hi) !important;
+    --link-color-hover: var(--sgc-amber-hi) !important;
+    --link-color-active: var(--sgc-orange) !important;
+    --button-text-color-primary: #020406 !important;
+    --button-background-color-primary: var(--sgc-blue) !important;
+    --button-background-color-primary-hover: var(--sgc-frame-hi) !important;
+    --button-background-color-primary-active: var(--sgc-orange) !important;
+    --border-radius-small: 0px !important;
+    --border-radius-medium: 0px !important;
+    --border-radius-large: 0px !important;
+    --button-border-radius: 0px !important;
+
+    /* older in-content names, still read by some pages */
+    --in-content-page-background: var(--sgc-bg) !important;
+    --in-content-box-background: var(--sgc-panel) !important;
+    --in-content-page-color: var(--sgc-text) !important;
+    --in-content-accent-color: var(--sgc-blue) !important;
+    --in-content-accent-color-active: var(--sgc-orange) !important;
+    --in-content-primary-button-background: var(--sgc-blue) !important;
+    --in-content-primary-button-background-hover: var(--sgc-frame-hi) !important;
+    --in-content-primary-button-background-active: var(--sgc-orange) !important;
+    --in-content-primary-button-text-color: #020406 !important;
+
+    /* new tab */
+    --newtab-background-color: var(--sgc-bg) !important;
+    --newtab-background-color-secondary: var(--sgc-panel) !important;
+    --newtab-background-card: var(--sgc-panel) !important;
+    --newtab-text-primary-color: var(--sgc-text) !important;
+    --newtab-text-secondary-text: #7F93A8 !important;
+    --newtab-primary-action-background: var(--sgc-blue) !important;
+    --newtab-element-hover-color: rgb(242 179 61 / 0.07) !important;
+    --newtab-element-active-color: rgb(255 138 30 / 0.16) !important;
+    --newtab-wallpaper-color: var(--sgc-bg) !important;
+  }
+
+  html,
+  body {
+    background-color: var(--sgc-bg) !important;
+    color: var(--sgc-text) !important;
+    font-family: var(--sgc-mono) !important;
+  }
+
+  ::selection {
+    background-color: var(--sgc-selection) !important;
+  }
+
+  h1,
+  h2,
+  .header-name,
+  .section-title,
+  .section-title span {
+    font-family: var(--sgc-title) !important;
+    font-weight: 400 !important;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--sgc-amber) !important;
+  }
+}
+
+/* New tab: a Michroma legend over the search box */
+@-moz-document url("about:newtab"), url("about:home") {
+  .logo-and-wordmark {
+    display: none !important;
+  }
+
+  .search-wrapper::before {
+    content: "STARGATE COMMAND \00B7  CHEYENNE MOUNTAIN COMPLEX \00B7  LEVEL 28";
+    display: block;
+    margin-bottom: 18px;
+    text-align: center;
+    font: 11px "SGate Michroma", "Michroma", sans-serif;
+    letter-spacing: 3px;
+    color: #2B5F92;
+  }
+
+  .search-handoff-button,
+  .search-wrapper input {
+    --sgc-cut: 10px;
+    background-color: #0A1521 !important;
+    border: 1px solid #2B6FB3 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: #BFE3FF !important;
+    font-family: "SGate Share Tech Mono", "Share Tech Mono", monospace !important;
+    clip-path: polygon(
+      var(--sgc-cut) 0, 100% 0,
+      100% calc(100% - var(--sgc-cut)), calc(100% - var(--sgc-cut)) 100%,
+      0 100%, 0 var(--sgc-cut)
+    );
+  }
+
+  .search-handoff-button:hover,
+  .search-wrapper input:focus {
+    border-color: #5CC8FF !important;
+  }
+
+  .search-handoff-button .fake-textbox {
+    color: #3E5A74 !important;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .top-site-outer .tile {
+    background-color: #0A1521 !important;
+    border: 1px solid rgb(43 111 179 / 0.45) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .top-site-outer:is(:hover, :focus-within) .tile {
+    border-color: rgb(242 179 61 / 0.7) !important;
+    background-color: rgb(242 179 61 / 0.07) !important;
+  }
+
+  .top-site-outer .title {
+    color: #C9D6E3 !important;
+    font-family: "SGate Share Tech Mono", "Share Tech Mono", monospace !important;
+  }
+
+  .top-site-outer:is(:hover, :focus-within) .title {
+    color: #FFD27A !important;
+  }
+}

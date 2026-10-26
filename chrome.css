@@ -1,0 +1,772 @@
+/* SGate Theme for Zen Browser: the browser chrome skinned as a Stargate
+ * Command dialing-computer console.
+ *
+ * Load it as a Sine mod, or from the profile's chrome/userChrome.css with
+ *
+ *   @import url("./SGateTheme-Zen/chrome.css");
+ *
+ * Other userChrome rules and mods are often !important too, so every rule here
+ * is scoped under a selector worth three ids and wins on specificity; this
+ * file then only has to say what it changes. (A cascade layer would be tidier,
+ * but Firefox ranks unlayered !important user rules above layered ones.)
+ *
+ * Blue-black panels in a 1 px event-horizon frame with the top-left and
+ * bottom-right corners cut, amber on hover, chevron orange for the selection,
+ * Share Tech Mono for text and Michroma for titles (both bundled in fonts/).
+ * The mod.sgate.* switches are described in preferences.json. Written against
+ * Zen 1.23 (Firefox 158).
+ */
+
+/* Bundled under their own names, so an installed copy of either font with
+ * different metrics can't stand in. */
+@font-face {
+  font-family: "SGate Share Tech Mono";
+  src: url("fonts/ShareTechMono-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "SGate Michroma";
+  src: url("fonts/Michroma-Regular.ttf") format("truetype");
+}
+
+/* Registered so frame and fill colours fade in 140 ms, like the dialing
+ * computer's lamps. */
+@property --sgc-edge {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+@property --sgc-fill {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+
+/* Three ids of specificity in front of every rule: enough to outrank generic
+ * userChrome rules loaded alongside this file. */
+:root:not(#sgc-a):not(#sgc-b):not(#sgc-c) {
+  & {
+    --sgc-void: #020406;
+    --sgc-bg: #04070A;
+    --sgc-surface: #060A0F;
+    --sgc-panel: #0A1521;
+    --sgc-frame: #2B6FB3;
+    --sgc-frame-hi: #5CC8FF;
+    --sgc-blue: #3FA0FF;
+    --sgc-rail: #2B5F92;
+    --sgc-dim: #3E5A74;
+    --sgc-muted: #7F93A8;
+    --sgc-text: #C9D6E3;
+    --sgc-text-hi: #BFE3FF;
+    --sgc-bright: #F2F7FC;
+    --sgc-amber: #F2B33D;
+    --sgc-amber-hi: #FFD27A;
+    --sgc-orange: #FF8A1E;
+    --sgc-red: #FF5A4A;
+    --sgc-selection: #173A5E;
+
+    --sgc-mono: "SGate Share Tech Mono", "Share Tech Mono", monospace;
+    --sgc-title: "SGate Michroma", "Michroma", sans-serif;
+
+    /* mod.sgate.system_fonts: Zen's own lettering instead */
+    @media (-moz-pref("mod.sgate.system_fonts")) {
+      --sgc-mono: system-ui, sans-serif;
+      --sgc-title: system-ui, sans-serif;
+    }
+
+    /* hover / selected */
+    --sgc-hover-edge: rgb(242 179 61 / 0.7);
+    --sgc-hover-fill: rgb(242 179 61 / 0.07);
+    --sgc-select-edge: rgb(255 138 30 / 0.85);
+    --sgc-select-fill: rgb(255 138 30 / 0.16);
+
+    /* the console scale: a base line with a tick every 6 px and a long one
+     * every 48 px */
+    --sgc-rail-image:
+      linear-gradient(var(--sgc-rail), var(--sgc-rail)) left 8px bottom 3px / calc(100% - 16px) 1px no-repeat,
+      repeating-linear-gradient(90deg, var(--sgc-rail) 0 1px, transparent 1px 6px) left 8px bottom 4px / calc(100% - 16px) 2px no-repeat,
+      repeating-linear-gradient(90deg, var(--sgc-rail) 0 1px, transparent 1px 48px) left 8px bottom 0 / calc(100% - 16px) 9px no-repeat;
+  }
+
+  /* ------------------------------------------------------------------------
+   * The SGC panel: corners cut top-left and bottom-right, framed by a 1 px
+   * --sgc-edge line that follows the cuts, filled with --sgc-fill. Each user
+   * sets --sgc-cut, --sgc-edge and --sgc-fill. The cuts are clipped away and
+   * the diagonal frame is a gradient band along each cut.
+   * ------------------------------------------------------------------------ */
+  .tabbrowser-tab .tab-background,
+  #urlbar:not([breakout-extend]) .urlbar-background,
+  #tabbrowser-arrowscrollbox-periphery > toolbarbutton,
+  zen-workspace .zen-current-workspace-indicator::before {
+    border: 1px solid var(--sgc-edge) !important;
+    border-radius: 0 !important;
+    background:
+      linear-gradient(135deg, var(--sgc-edge) 0 calc(var(--sgc-cut) * 0.7071 + 1px), transparent 0),
+      linear-gradient(315deg, var(--sgc-edge) 0 calc(var(--sgc-cut) * 0.7071 + 1px), transparent 0),
+      var(--sgc-fill) !important;
+    background-origin: border-box !important;
+    clip-path: polygon(
+      var(--sgc-cut) 0, 100% 0,
+      100% calc(100% - var(--sgc-cut)), calc(100% - var(--sgc-cut)) 100%,
+      0 100%, 0 var(--sgc-cut)
+    ) !important;
+    box-shadow: none !important;
+    transition: --sgc-edge 140ms ease, --sgc-fill 140ms ease !important;
+  }
+
+  /* ------------------------------------------------------------------------
+   * Window: blast-door blue-black everywhere. Zen paints a per-space gradient
+   * through inline custom properties; user !important beats those.
+   * ------------------------------------------------------------------------ */
+  &,
+  .zen-browser-generic-background {
+    --zen-main-browser-background: var(--sgc-bg) !important;
+    --zen-main-browser-background-toolbar: var(--sgc-bg) !important;
+    --zen-main-browser-background-old: var(--sgc-bg) !important;
+    --zen-main-browser-background-toolbar-old: var(--sgc-bg) !important;
+    --zen-background-opacity: 1 !important;
+  }
+
+  .zen-browser-grain {
+    display: none !important;
+  }
+
+  & {
+    color-scheme: dark !important;
+    --toolbar-color-scheme: dark !important;
+    --zen-primary-color: var(--sgc-blue) !important;
+    --zen-branding-bg: var(--sgc-bg) !important;
+    --zen-branding-bg-reverse: var(--sgc-text) !important;
+    --zen-colors-primary: var(--sgc-panel) !important;
+    --zen-colors-secondary: var(--sgc-frame) !important;
+    --zen-colors-tertiary: var(--sgc-surface) !important;
+    --zen-colors-border: rgb(43 111 179 / 0.55) !important;
+    --zen-colors-primary-foreground: var(--sgc-text-hi) !important;
+    --zen-dialog-background: var(--sgc-surface) !important;
+    --zen-urlbar-background: var(--sgc-panel) !important;
+    --zen-themed-toolbar-bg-transparent: var(--sgc-bg) !important;
+    --zen-sidebar-themed-icon-fill: var(--sgc-text-hi) !important;
+    --zen-accent-button-background: var(--sgc-orange) !important;
+
+    --toolbox-textcolor: var(--sgc-text-hi) !important;
+    --toolbar-color: var(--sgc-text-hi) !important;
+    --toolbar-bgcolor: var(--sgc-bg) !important;
+    --toolbar-field-color: var(--sgc-text-hi) !important;
+    --toolbar-field-focus-color: var(--sgc-bright) !important;
+    --toolbar-field-background-color: var(--sgc-panel) !important;
+    --toolbar-field-focus-background-color: var(--sgc-panel) !important;
+    --toolbar-field-border-color: var(--sgc-frame) !important;
+    --toolbar-field-focus-border-color: var(--sgc-frame-hi) !important;
+
+    --toolbarbutton-border-radius: 0px !important;
+    --toolbarbutton-icon-fill: currentColor !important;
+    --toolbarbutton-icon-fill-attention: var(--sgc-orange) !important;
+    --toolbarbutton-background-color-hover: var(--sgc-hover-fill) !important;
+    --toolbarbutton-background-color-active: var(--sgc-select-fill) !important;
+
+    --tab-selected-textcolor: var(--sgc-amber-hi) !important;
+    --tab-border-radius: 0px !important;
+    --border-radius-medium: 0px !important;
+
+    --focus-outline-color: var(--sgc-frame-hi) !important;
+    --color-accent-primary: var(--sgc-blue) !important;
+    --color-accent-primary-hover: var(--sgc-frame-hi) !important;
+    --color-accent-primary-active: var(--sgc-orange) !important;
+    --button-background-color-primary: var(--sgc-blue) !important;
+    --button-primary-hover-bgcolor: var(--sgc-frame-hi) !important;
+    --button-primary-active-bgcolor: var(--sgc-orange) !important;
+    --button-text-color-primary: var(--sgc-void) !important;
+    --button-border-radius: 0px !important;
+    --link-color: var(--sgc-frame-hi) !important;
+    --icon-color-critical: var(--sgc-red) !important;
+    --icon-color-warning: var(--sgc-amber) !important;
+    --icon-color-information: var(--sgc-blue) !important;
+    --text-color-error: var(--sgc-red) !important;
+    --outline-color-error: var(--sgc-red) !important;
+    --panel-separator-zap-gradient: linear-gradient(90deg, var(--sgc-blue), var(--sgc-orange)) !important;
+
+    --zen-native-inner-radius: 0px !important;
+    --zen-border-radius: 0px !important;
+    --zen-big-shadow: none !important;
+  }
+
+  /* Console lettering for the whole chrome. Menus set `font: menu` and some
+   * widgets their own font, so name them too. */
+  &,
+  toolbarbutton,
+  button,
+  input,
+  label,
+  description,
+  menupopup,
+  menuitem,
+  menu,
+  menucaption,
+  panel,
+  tooltip {
+    font-family: var(--sgc-mono) !important;
+  }
+
+  ::selection {
+    background-color: var(--sgc-selection) !important;
+    color: var(--sgc-bright) !important;
+  }
+
+  #navigator-toolbox,
+  #zen-appcontent-navbar-wrapper,
+  #nav-bar,
+  #PersonalToolbar {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  #navigator-toolbox {
+    scrollbar-color: var(--sgc-rail) transparent;
+  }
+
+  /* ------------------------------------------------------------------------
+   * Web content: each page sits in a console panel. The pane is an SGC panel
+   * (frame, bands along the cuts, console-black fill for when no page is
+   * showing); the page inside is clipped to the same outline 1 px in, which
+   * uncovers the bands along the cuts. mod.sgate.plain_pages turns it off.
+   * ------------------------------------------------------------------------ */
+  @media not (-moz-pref("mod.sgate.plain_pages")) {
+    &:not([inDOMFullscreen="true"], [popup-window], [zen-no-padding="true"]) #tabbrowser-tabpanels .browserSidebarContainer:not(.zen-glance-overlay) {
+      --sgc-cut: 14px;
+      --sgc-pane-frame: rgb(43 111 179 / 0.9);
+      border: 1px solid var(--sgc-pane-frame) !important;
+      border-radius: 0 !important;
+      background:
+        linear-gradient(135deg, var(--sgc-pane-frame) 0 calc(var(--sgc-cut) * 0.7071 + 1px), transparent 0),
+        linear-gradient(315deg, var(--sgc-pane-frame) 0 calc(var(--sgc-cut) * 0.7071 + 1px), transparent 0),
+        var(--sgc-bg) !important;
+      background-origin: border-box !important;
+      box-shadow: none !important;
+      outline: none !important;
+      clip-path: polygon(
+        var(--sgc-cut) 0, 100% 0,
+        100% calc(100% - var(--sgc-cut)), calc(100% - var(--sgc-cut)) 100%,
+        0 100%, 0 var(--sgc-cut)
+      ) !important;
+
+      & > .browserContainer {
+        --sgc-inner-cut: calc(var(--sgc-cut) - 0.6px);
+        clip-path: polygon(
+          var(--sgc-inner-cut) 0, 100% 0,
+          100% calc(100% - var(--sgc-inner-cut)), calc(100% - var(--sgc-inner-cut)) 100%,
+          0 100%, 0 var(--sgc-inner-cut)
+        ) !important;
+      }
+    }
+
+    /* split view: the focused pane's frame goes chevron orange */
+    &:not([inDOMFullscreen="true"]) #tabbrowser-tabpanels[zen-split-view="true"] .browserSidebarContainer.deck-selected:not(.zen-glance-overlay) {
+      --sgc-pane-frame: var(--sgc-orange);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+   * Tabs: one console panel per tab.
+   * ------------------------------------------------------------------------ */
+  .tabbrowser-tab {
+    font-size: 13px !important;
+    letter-spacing: 0.3px;
+
+    & .tab-background {
+      --sgc-cut: 6px;
+      --sgc-edge: rgb(43 111 179 / 0.45);
+      --sgc-fill: rgb(10 21 33 / 0.85);
+    }
+
+    & .tab-label {
+      color: var(--sgc-text) !important;
+    }
+
+    &:hover .tab-background {
+      --sgc-edge: var(--sgc-hover-edge);
+      --sgc-fill: var(--sgc-hover-fill);
+    }
+
+    &:hover .tab-label {
+      color: var(--sgc-amber-hi) !important;
+    }
+
+    &[multiselected="true"] .tab-background {
+      --sgc-edge: rgb(92 200 255 / 0.8);
+      --sgc-fill: rgb(63 160 255 / 0.14);
+    }
+
+    &:is([selected], [visuallyselected]) .tab-background {
+      --sgc-edge: var(--sgc-select-edge);
+      --sgc-fill: var(--sgc-select-fill);
+    }
+
+    &:is([selected], [visuallyselected]):hover .tab-background {
+      --sgc-edge: var(--sgc-orange);
+    }
+
+    &:is([selected], [visuallyselected]) .tab-label {
+      color: var(--sgc-amber-hi) !important;
+    }
+
+    /* pending (not yet loaded) tabs stay dim, like an idle chevron */
+    &[pending="true"]:not(:hover) .tab-label {
+      color: var(--sgc-muted) !important;
+    }
+
+    & :is(.tab-close-button, .tab-reset-button) {
+      border-radius: 0 !important;
+
+      &:hover {
+        background-color: rgb(255 90 74 / 0.18) !important;
+        color: var(--sgc-red) !important;
+      }
+    }
+
+    & .tab-icon-image {
+      border-radius: 0 !important;
+    }
+
+    /* Essentials: Zen lays a rounded grey plate and a blurred favicon over the
+     * selected one; the panel says enough. */
+    &[zen-essential="true"] .tab-background {
+      &::before,
+      &::after {
+        display: none !important;
+      }
+    }
+  }
+
+  .tab-group-label,
+  zen-folder .tab-label {
+    font-family: var(--sgc-mono) !important;
+  }
+
+  /* "+ New Tab": an empty console slot with an amber legend */
+  #tabbrowser-arrowscrollbox-periphery > toolbarbutton {
+    --sgc-cut: 6px;
+    --sgc-edge: rgb(43 95 146 / 0.5);
+    --sgc-fill: transparent;
+    margin-block: 2px !important;
+
+    & .toolbarbutton-text,
+    & label {
+      color: var(--sgc-amber) !important;
+      font-size: 11px !important;
+      letter-spacing: 1.5px !important;
+      text-transform: uppercase;
+    }
+
+    & image,
+    & .toolbarbutton-icon {
+      fill: var(--sgc-amber) !important;
+      background: transparent !important;
+    }
+
+    &:hover {
+      --sgc-edge: var(--sgc-hover-edge);
+      --sgc-fill: var(--sgc-hover-fill);
+
+      & .toolbarbutton-text,
+      & label {
+        color: var(--sgc-amber-hi) !important;
+      }
+    }
+  }
+
+  /* pinned / unpinned divider */
+  .pinned-tabs-container-separator {
+    --zen-pinned-separator-color: rgb(43 95 146 / 0.7) !important;
+  }
+
+  /* ------------------------------------------------------------------------
+   * Space name: a Michroma legend over a console scale. The
+   * mod.sgate.hide_space_name and mod.sgate.hide_spaces_switcher switches
+   * remove it and the switcher, for anyone who keeps to one space.
+   * ------------------------------------------------------------------------ */
+  @media (-moz-pref("mod.sgate.hide_space_name")) {
+    zen-workspace .zen-current-workspace-indicator {
+      display: none !important;
+    }
+  }
+
+  @media (-moz-pref("mod.sgate.hide_spaces_switcher")) {
+    #zen-workspaces-button {
+      display: none !important;
+    }
+  }
+
+  zen-workspace .zen-current-workspace-indicator {
+    color: var(--sgc-amber) !important;
+    background: var(--sgc-rail-image) !important;
+    background-origin: padding-box !important;
+    background-clip: padding-box !important;
+
+    &::before {
+      --sgc-cut: 5px;
+      --sgc-edge: transparent;
+      --sgc-fill: transparent;
+    }
+
+    &:is(:hover, [open="true"])::before {
+      --sgc-edge: var(--sgc-hover-edge);
+      --sgc-fill: var(--sgc-hover-fill);
+    }
+
+    & .zen-current-workspace-indicator-name {
+      font-family: var(--sgc-title) !important;
+      font-size: 10px !important;
+      font-weight: 400 !important;
+      letter-spacing: 2px !important;
+      text-transform: uppercase;
+      color: var(--sgc-amber) !important;
+    }
+
+    & .zen-current-workspace-indicator-icon {
+      color: var(--sgc-amber) !important;
+      fill: var(--sgc-amber) !important;
+    }
+  }
+
+  /* space switcher at the foot of the sidebar: the active space lights amber */
+  #zen-workspaces-button toolbarbutton {
+    border-radius: 0 !important;
+
+    &[active="true"] .zen-workspace-icon {
+      color: var(--sgc-amber-hi) !important;
+      fill: var(--sgc-amber-hi) !important;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+   * Toolbar buttons: square, amber on hover, orange when open or checked.
+   * ------------------------------------------------------------------------ */
+  .toolbarbutton-1 {
+    color: var(--sgc-text-hi) !important;
+
+    &:not([disabled]):hover {
+      color: var(--sgc-amber-hi) !important;
+    }
+
+    &:is([open], [checked]) {
+      color: var(--sgc-orange) !important;
+    }
+
+    & > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack, .toolbarbutton-text) {
+      border-radius: 0 !important;
+      clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+    }
+  }
+
+  .toolbarbutton-badge {
+    background-color: var(--sgc-orange) !important;
+    color: var(--sgc-void) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* ------------------------------------------------------------------------
+   * Address bar: a console panel with an amber "DESTINATION" legend.
+   * ------------------------------------------------------------------------ */
+  #urlbar {
+    font-size: 14px !important;
+    --urlbar-icon-border-radius: 0px !important;
+    --urlbar-inner-border-radius: 0px !important;
+    --urlbarview-background-color-hover: var(--sgc-hover-fill) !important;
+    --urlbarview-background-color-selected: var(--sgc-select-fill) !important;
+    --urlbarview-text-color-selected: var(--sgc-amber-hi) !important;
+    color: var(--sgc-text-hi) !important;
+  }
+
+  #urlbar:not([breakout-extend]) .urlbar-background {
+    --sgc-cut: 7px;
+    --sgc-edge: var(--sgc-frame);
+    --sgc-fill: var(--sgc-panel);
+  }
+
+  #urlbar:not([breakout-extend]):hover .urlbar-background {
+    --sgc-edge: var(--sgc-blue);
+  }
+
+  #urlbar:not([breakout-extend])[focused] .urlbar-background {
+    --sgc-edge: var(--sgc-frame-hi);
+  }
+
+  #urlbar .urlbar-input-container {
+    background: transparent !important;
+    border: none !important;
+
+    &::before {
+      content: "DESTINATION";
+      order: -100; /* ahead of Zen's copy-URL button */
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      align-self: stretch;
+      margin-block: 6px;
+      margin-inline-end: 4px;
+      padding-inline: 8px 10px;
+      border-inline-end: 1px solid rgb(43 111 179 / 0.7);
+      color: var(--sgc-amber);
+      font: 11px var(--sgc-mono);
+      letter-spacing: 1.5px;
+    }
+  }
+
+  /* no room for the legend in the single-toolbar layout */
+  &[zen-single-toolbar="true"] #urlbar .urlbar-input-container::before {
+    display: none;
+  }
+
+  @media (-moz-pref("mod.sgate.hide_destination")) {
+    #urlbar .urlbar-input-container::before {
+      display: none;
+    }
+  }
+
+  #urlbar .urlbar-input {
+    color: var(--sgc-text-hi) !important;
+    letter-spacing: 0.4px;
+  }
+
+  #urlbar .urlbar-input::placeholder {
+    color: var(--sgc-dim) !important;
+    opacity: 1 !important;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  #urlbar .urlbar-input::selection {
+    background-color: var(--sgc-selection) !important;
+    color: var(--sgc-bright) !important;
+  }
+
+  #identity-box,
+  #tracking-protection-icon-container,
+  #page-action-buttons {
+    fill: var(--sgc-muted) !important;
+    color: var(--sgc-muted) !important;
+  }
+
+  #identity-icon-box,
+  #identity-permission-box,
+  #notification-popup-box,
+  #tracking-protection-icon-container,
+  .urlbar-page-action,
+  #zen-copy-url-button {
+    border-radius: 0 !important;
+  }
+
+  #identity-box.chromeUI:not([pageproxystate="invalid"]) #identity-icon-box {
+    background: rgb(63 160 255 / 0.12) !important;
+  }
+
+  #urlbar-search-mode-indicator {
+    background-color: var(--sgc-select-fill) !important;
+    color: var(--sgc-amber-hi) !important;
+    border: 1px solid var(--sgc-select-edge) !important;
+    border-radius: 0 !important;
+  }
+
+  /* Open (typing or floating): the launcher frame, blue fading to orange,
+   * 2 px, larger cuts. Corners are cut where the gradient is pure blue (top
+   * left) and pure orange (bottom right), so the diagonals take those colours. */
+  #urlbar[breakout-extend] .urlbar-background {
+    --sgc-cut: 12px;
+    border: 2px solid transparent !important;
+    border-radius: 0 !important;
+    background:
+      linear-gradient(135deg, var(--sgc-blue) 0 calc(var(--sgc-cut) * 0.7071 + 2px), transparent 0) border-box,
+      linear-gradient(315deg, var(--sgc-orange) 0 calc(var(--sgc-cut) * 0.7071 + 2px), transparent 0) border-box,
+      linear-gradient(var(--sgc-surface), var(--sgc-surface)) padding-box,
+      linear-gradient(to bottom right, rgb(63 160 255 / 0.93), rgb(255 138 30 / 0.93)) border-box !important;
+    clip-path: polygon(
+      var(--sgc-cut) 0, 100% 0,
+      100% calc(100% - var(--sgc-cut)), calc(100% - var(--sgc-cut)) 100%,
+      0 100%, 0 var(--sgc-cut)
+    ) !important;
+    box-shadow: none !important;
+  }
+
+  /* the clip takes Zen's shadow with it; a drop shadow follows the cut shape */
+  #urlbar[breakout-extend][zen-floating-urlbar="true"] {
+    filter: drop-shadow(0 24px 48px rgb(0 0 0 / 0.7));
+  }
+
+  /* the slot the address bar leaves in the toolbar while it floats */
+  #urlbar-container:has(#urlbar[open][zen-floating-urlbar="true"]) {
+    background: rgb(10 21 33 / 0.6) !important;
+    border-radius: 0 !important;
+    clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+  }
+
+  /* results: highlight like a notification, a thick left edge */
+  .urlbarView-row {
+    border-radius: 0 !important;
+
+    &[row-selectable]:not([selected]):hover {
+      background-color: var(--sgc-hover-fill) !important;
+      box-shadow: inset 3px 0 0 rgb(242 179 61 / 0.6) !important;
+    }
+
+    &[selected] {
+      background-color: var(--sgc-select-fill) !important;
+      box-shadow: inset 3px 0 0 var(--sgc-orange) !important;
+
+      & :is(.urlbarView-title, .urlbarView-action, .urlbarView-url) {
+        color: var(--sgc-amber-hi) !important;
+      }
+    }
+  }
+
+  .urlbarView-title {
+    color: var(--sgc-text) !important;
+  }
+
+  .urlbarView-url {
+    color: var(--sgc-frame-hi) !important;
+  }
+
+  .urlbarView-action,
+  .urlbarView-title-separator {
+    color: var(--sgc-amber) !important;
+  }
+
+  .urlbarView-favicon,
+  .urlbarView-shortcutContent,
+  .urlbarView-action-favicon {
+    border-radius: 0 !important;
+  }
+
+  .search-panel-one-offs .searchbar-engine-one-off-item {
+    border-radius: 0 !important;
+  }
+
+  /* ------------------------------------------------------------------------
+   * Menus and panels: the shell's menu skin, a dark plate in the blue-to-orange
+   * frame with amber hover and orange selection.
+   *
+   * User sheets can't reach a popup's ::part(content), but Firefox paints that
+   * part with `background: var(--panel-background-color)` inside a 1 px
+   * --panel-border-color border, so the frame goes in through the variable:
+   * a clear border over a gradient border-box layer, the plate in the
+   * padding-box, and bands along the cuts. The popup itself is clipped to the
+   * cut outline (with no shadow margin, the popup and its part are one box).
+   * ------------------------------------------------------------------------ */
+  menupopup,
+  panel {
+    --sgc-cut: 8px;
+    --panel-background-color:
+      linear-gradient(135deg, var(--sgc-blue) 0 calc(var(--sgc-cut) * 0.7071 + 1px), transparent 0) border-box,
+      linear-gradient(315deg, var(--sgc-orange) 0 calc(var(--sgc-cut) * 0.7071 + 1px), transparent 0) border-box,
+      linear-gradient(var(--sgc-surface), var(--sgc-surface)) padding-box,
+      linear-gradient(to bottom right, rgb(63 160 255 / 0.93), rgb(255 138 30 / 0.93)) border-box !important;
+    --background-color-canvas: var(--sgc-surface) !important;
+    --panel-background: var(--sgc-surface) !important;
+    --panel-text-color: var(--sgc-text) !important;
+    --panel-color: var(--sgc-text) !important;
+    --panel-border-color: transparent !important;
+    --panel-border-radius: 0px !important;
+    --panel-box-shadow: none !important;
+    --panel-box-shadow-margin: 0px !important;
+    clip-path: polygon(
+      var(--sgc-cut) 0, 100% 0,
+      100% calc(100% - var(--sgc-cut)), calc(100% - var(--sgc-cut)) 100%,
+      0 100%, 0 var(--sgc-cut)
+    );
+    --panel-separator-color: rgb(43 95 146 / 0.6) !important;
+    --panel-item-hover-bgcolor: var(--sgc-hover-fill) !important;
+    --panel-item-active-bgcolor: var(--sgc-select-fill) !important;
+    --arrowpanel-background: var(--sgc-surface) !important;
+    --arrowpanel-color: var(--sgc-text) !important;
+    --arrowpanel-border-color: var(--sgc-frame) !important;
+    --arrowpanel-border-radius: 0px !important;
+    --arrowpanel-menuitem-border-radius: 0px !important;
+    --menuitem-border-radius: 0px !important;
+    --button-border-radius: 0px !important;
+  }
+
+  /* the Firefox-account promo at the top of the app menu: an info notice */
+  #appMenu-fxa-sign-in-promo {
+    background: rgb(63 160 255 / 0.1) !important;
+    box-shadow: inset 3px 0 0 var(--sgc-blue) !important;
+    border-radius: 0 !important;
+    color: var(--sgc-text-hi) !important;
+
+    & .fxa-menu-sign-in-promo-heading {
+      color: var(--sgc-amber) !important;
+    }
+  }
+
+  menupopup :is(menuitem, menu) {
+    border-radius: 0 !important;
+
+    &[_moz-menuactive]:not([disabled="true"]) {
+      background-color: var(--sgc-select-fill) !important;
+      color: var(--sgc-amber-hi) !important;
+      box-shadow: inset 3px 0 0 var(--sgc-orange) !important;
+    }
+  }
+
+  menupopup menucaption,
+  .panel-header h1,
+  .panel-header > h1 > span,
+  .panel-subview-body > .subview-subheader {
+    font-family: var(--sgc-title) !important;
+    font-size: 10px !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase;
+    color: var(--sgc-amber) !important;
+  }
+
+  menuseparator,
+  toolbarseparator {
+    border-color: rgb(43 95 146 / 0.6) !important;
+  }
+
+  panel :is(.subviewbutton, .panel-button, button) {
+    border-radius: 0 !important;
+  }
+
+  panel .subviewbutton:not([disabled]):hover {
+    color: var(--sgc-amber-hi) !important;
+  }
+
+  panel button.primary,
+  panel .footer-button.primary,
+  panel .popup-notification-primary-button {
+    background-color: var(--sgc-blue) !important;
+    color: var(--sgc-void) !important;
+    border-radius: 0 !important;
+
+    &:hover {
+      background-color: var(--sgc-frame-hi) !important;
+    }
+  }
+
+  tooltip {
+    appearance: none !important;
+    background-color: var(--sgc-surface) !important;
+    color: var(--sgc-text-hi) !important;
+    border: 1px solid rgb(63 160 255 / 0.8) !important;
+    border-radius: 0 !important;
+    padding: 4px 8px !important;
+  }
+
+  /* find bar and info bars */
+  findbar,
+  notification-message {
+    font-family: var(--sgc-mono) !important;
+  }
+
+  .findbar-textbox {
+    border-radius: 0 !important;
+    background-color: var(--sgc-panel) !important;
+    border: 1px solid var(--sgc-frame) !important;
+    color: var(--sgc-text-hi) !important;
+
+    &:focus {
+      border-color: var(--sgc-frame-hi) !important;
+    }
+  }
+}
