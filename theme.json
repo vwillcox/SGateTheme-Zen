@@ -4,6 +4,7 @@
   "description": "Zen as a Stargate Command dialing console: cut-corner tabs, amber legends and chevron orange.",
   "homepage": "https://github.com/vwillcox/SGateTheme-Zen",
   "author": "vwillcox",
+  "ai": "yes",
   "version": "1.0.0",
   "createdAt": "2026-10-26",
   "updatedAt": "2026-10-26",
